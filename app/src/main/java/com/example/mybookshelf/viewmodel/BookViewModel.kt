@@ -1,34 +1,34 @@
 package com.example.mybookshelf.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.mybookshelf.data.local.entity.BookEntity
+import com.example.mybookshelf.data.local.entity.toBook
 import com.example.mybookshelf.data.model.Book
+import com.example.mybookshelf.data.repository.BookRepository
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
-class BookViewModel: ViewModel() {
+class BookViewModel(
+    private val repository: BookRepository
+) : ViewModel() {
     private val _uiState = MutableStateFlow(BookUiState())
     val uiState: StateFlow<BookUiState> = _uiState
 
-    private val _books = MutableStateFlow(
-        listOf(
-            Book(
-                title = "Android開発入門",
-                author = "〇〇〇〇",
-                status = "読書中"
-            ),
-            Book(
-                title = "kotlin入門",
-                author = "△△△△",
-                status = "読了"
-            ),
-            Book(
-                title = "Java入門",
-                author = "□□□",
-                status = "未読"
+    val books: StateFlow<List<Book>> =
+        repository.getAllBooks()
+            .map { entities ->
+                entities.map { it.toBook() }
+            }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5_000),
+                initialValue = emptyList()
             )
-        )
-    )
-    val books: StateFlow<List<Book>> = _books
 
     fun updateTitle(title: String) {
         _uiState.value = _uiState.value.copy(title = title)
@@ -43,12 +43,14 @@ class BookViewModel: ViewModel() {
     }
 
     fun addBook() {
-        val newBook = Book(
+        val book = BookEntity(
             title = _uiState.value.title,
             author = _uiState.value.author,
             status = _uiState.value.status
         )
 
-        _books.value += newBook
+        viewModelScope.launch {
+            repository.insertBook(book)
+        }
     }
 }
