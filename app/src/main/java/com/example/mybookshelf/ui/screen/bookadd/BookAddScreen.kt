@@ -22,16 +22,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mybookshelf.ui.theme.MyBookShelfTheme
+import com.example.mybookshelf.viewmodel.BookViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BookAddScreen() {
-    var title by remember { mutableStateOf("") }
-    var author by remember { mutableStateOf("") }
-    var status by remember { mutableStateOf("") }
+fun BookAddScreen(
+    viewModel: BookViewModel = viewModel()
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var expanded by remember { mutableStateOf(false) }
-    val statusList = listOf("未読", "読書中", "読了")
 
     Column(
         modifier = Modifier
@@ -42,15 +44,15 @@ fun BookAddScreen() {
         Text(text = "本を追加")
 
         OutlinedTextField(
-            value = title,
-            onValueChange = { title = it },
+            value = uiState.title,
+            onValueChange = { viewModel.updateTitle(it) },
             modifier = Modifier.fillMaxWidth(),
             label = { Text("タイトル") }
         )
 
         OutlinedTextField(
-            value = author,
-            onValueChange = { author = it },
+            value = uiState.author,
+            onValueChange = { viewModel.updateAuthor(it) },
             modifier = Modifier.fillMaxWidth(),
             label = { Text("著者") }
         )
@@ -61,7 +63,7 @@ fun BookAddScreen() {
             onExpandedChange = { expanded = !expanded }
         ) {
             TextField(
-                value = status,
+                value = uiState.status,
                 onValueChange = {},
                 readOnly = true,
                 modifier = Modifier
@@ -78,11 +80,13 @@ fun BookAddScreen() {
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
             ) {
+                val statusList = listOf("未読", "読書中", "読了")
+
                 statusList.forEach { option ->
                     DropdownMenuItem(
                         text = { Text(option) },
                         onClick = {
-                            status = option
+                            viewModel.updateStatus(option)
                             expanded = false
                         }
                     )
