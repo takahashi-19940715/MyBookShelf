@@ -23,17 +23,41 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mybookshelf.ui.theme.MyBookShelfTheme
 import com.example.mybookshelf.viewmodel.BookViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookAddScreen(
     viewModel: BookViewModel,
     onBookAdded: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    BookAddContent(
+        title = uiState.title,
+        author = uiState.author,
+        status = uiState.status,
+        onTitleChange = { viewModel.updateTitle(it) },
+        onAuthorChange = { viewModel.updateAuthor(it) },
+        onStatusChange = { viewModel.updateStatus(it) },
+        onAddBook = {
+            viewModel.addBook()
+            onBookAdded()
+        }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun BookAddContent(
+    title: String,
+    author: String,
+    status: String,
+    onTitleChange: (String) -> Unit,
+    onAuthorChange: (String) -> Unit,
+    onStatusChange: (String) -> Unit,
+    onAddBook: () -> Unit
+) {
     var expanded by remember { mutableStateOf(false) }
 
     Column(
@@ -45,26 +69,27 @@ fun BookAddScreen(
         Text(text = "本を追加")
 
         OutlinedTextField(
-            value = uiState.title,
-            onValueChange = { viewModel.updateTitle(it) },
+            value = title,
+            onValueChange = { onTitleChange(it) },
             modifier = Modifier.fillMaxWidth(),
             label = { Text("タイトル") }
         )
 
         OutlinedTextField(
-            value = uiState.author,
-            onValueChange = { viewModel.updateAuthor(it) },
+            value = author,
+            onValueChange = { onAuthorChange(it) },
             modifier = Modifier.fillMaxWidth(),
             label = { Text("著者") }
         )
 
         Text("ステータス")
+
         ExposedDropdownMenuBox(
             expanded = expanded,
             onExpandedChange = { expanded = !expanded }
         ) {
             TextField(
-                value = uiState.status,
+                value = status,
                 onValueChange = {},
                 readOnly = true,
                 modifier = Modifier
@@ -81,13 +106,17 @@ fun BookAddScreen(
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
             ) {
-                val statusList = listOf("未読", "読書中", "読了")
+                val statusList = listOf(
+                    "未読",
+                    "読書中",
+                    "読了"
+                )
 
                 statusList.forEach { option ->
                     DropdownMenuItem(
                         text = { Text(option) },
                         onClick = {
-                            viewModel.updateStatus(option)
+                            onStatusChange(option)
                             expanded = false
                         }
                     )
@@ -96,28 +125,26 @@ fun BookAddScreen(
         }
 
         Button(
-            onClick = {
-                viewModel.addBook()
-                onBookAdded()
-            },
+            onClick = onAddBook,
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("登録")
         }
-
-
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun BookListScreenPreview() {
+fun BookAddScreenPreview() {
     MyBookShelfTheme {
-        val bookViewModel: BookViewModel = viewModel()
-
-        BookAddScreen(
-            viewModel = bookViewModel,
-            onBookAdded = {}
+        BookAddContent(
+            title = "Android開発入門",
+            author = "サンプル著者",
+            status = "読書中",
+            onTitleChange = {},
+            onAuthorChange = {},
+            onStatusChange = {},
+            onAddBook = {}
         )
     }
 }

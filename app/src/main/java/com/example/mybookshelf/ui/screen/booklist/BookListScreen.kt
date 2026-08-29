@@ -18,20 +18,30 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.mybookshelf.data.model.Book
 import com.example.mybookshelf.ui.theme.MyBookShelfTheme
 import com.example.mybookshelf.viewmodel.BookViewModel
 
 @Composable
 fun BookListScreen(
-    modifier: Modifier = Modifier,
     viewModel: BookViewModel,
     onAddBookClick: () -> Unit
 ) {
     val books by viewModel.books.collectAsStateWithLifecycle()
 
+    BookListContent(
+        books = books,
+        onAddBookClick = onAddBookClick
+    )
+}
+
+@Composable
+fun BookListContent(
+    books: List<Book>,
+    onAddBookClick: () -> Unit
+) {
     LazyColumn(
-        modifier = modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize()
     ) {
         item {
             Row(
@@ -94,10 +104,23 @@ fun BookListScreen(
 @Composable
 fun BookListScreenPreview() {
     MyBookShelfTheme {
-        val bookViewModel: BookViewModel = viewModel()
+        val sampleBooks = listOf(
+            Book(
+                id = 1,
+                title = "Android開発入門",
+                author = "サンプル著者",
+                status = "読書中"
+            ),
+            Book(
+                id = 2,
+                title = "Kotlin入門",
+                author = "サンプル著者",
+                status = "未読"
+            )
+        )
 
-        BookListScreen(
-            viewModel = bookViewModel,
+        BookListContent(
+            books = sampleBooks,
             onAddBookClick = {}
         )
     }
