@@ -22,6 +22,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.mybookshelf.ui.screen.bookadd.BookAddScreen
 import com.example.mybookshelf.ui.theme.MyBookShelfTheme
 
 class MainActivity : ComponentActivity() {
@@ -30,11 +34,26 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MyBookShelfTheme {
+                val navController = rememberNavController()
+
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    BookListScreen(
-                        name = "Android",
+                    NavHost(
+                        navController = navController,
+                        startDestination = "book_list",
                         modifier = Modifier.padding(innerPadding)
-                    )
+                    ) {
+                        composable("book_list") {
+                            BookListScreen(
+                                onAddBookClick = {
+                                    navController.navigate("book_add")
+                                }
+                            )
+                        }
+
+                        composable("book_add") {
+                            BookAddScreen()
+                        }
+                    }
                 }
             }
         }
@@ -96,7 +115,10 @@ val sampleBooks = listOf(
 )
 
 @Composable
-fun BookListScreen(name: String, modifier: Modifier = Modifier) {
+fun BookListScreen(
+    modifier: Modifier = Modifier,
+    onAddBookClick: () -> Unit
+) {
     LazyColumn(
         modifier = modifier.fillMaxSize()
     ) {
@@ -114,9 +136,7 @@ fun BookListScreen(name: String, modifier: Modifier = Modifier) {
                 )
 
                 IconButton(
-                    onClick = {
-                        // 後で本追加画面へ移動する
-                    }
+                    onClick = onAddBookClick
                 ) {
                     Text(
                         text = "+"
@@ -163,6 +183,8 @@ fun BookListScreen(name: String, modifier: Modifier = Modifier) {
 @Composable
 fun BookListScreenPreview() {
     MyBookShelfTheme {
-        BookListScreen("Android")
+        BookListScreen(
+            onAddBookClick = {}
+        )
     }
 }
