@@ -12,21 +12,24 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.mybookshelf.ui.screen.bookadd.BookAddScreen
 import com.example.mybookshelf.ui.theme.MyBookShelfTheme
+import com.example.mybookshelf.viewmodel.BookViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,6 +38,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             MyBookShelfTheme {
                 val navController = rememberNavController()
+                val bookViewModel: BookViewModel = viewModel()
 
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     NavHost(
@@ -44,6 +48,7 @@ class MainActivity : ComponentActivity() {
                     ) {
                         composable("book_list") {
                             BookListScreen(
+                                viewModel = bookViewModel,
                                 onAddBookClick = {
                                     navController.navigate("book_add")
                                 }
@@ -51,7 +56,12 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable("book_add") {
-                            BookAddScreen()
+                            BookAddScreen(
+                                viewModel = bookViewModel,
+                                onBookAdded = {
+                                    navController.popBackStack()
+                                }
+                            )
                         }
                     }
                 }
@@ -60,65 +70,14 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-data class Book(
-    val title: String,
-    val author: String,
-    val status: String
-)
-
-val sampleBooks = listOf(
-    Book(
-        title = "Android開発入門",
-        author = "〇〇〇〇",
-        status = "読書中"
-    ),
-    Book(
-        title = "kotlin入門",
-        author = "△△△△",
-        status = "読了"
-    ),
-    Book(
-        title = "Java入門",
-        author = "□□□",
-        status = "未読"
-    ),
-    Book(
-        title = "Java入門",
-        author = "□□□",
-        status = "未読"
-    ),
-    Book(
-        title = "Java入門",
-        author = "□□□",
-        status = "未読"
-    ),
-    Book(
-        title = "Java入門",
-        author = "□□□",
-        status = "未読"
-    ),
-    Book(
-        title = "Java入門",
-        author = "□□□",
-        status = "未読"
-    ),
-    Book(
-        title = "Java入門",
-        author = "□□□",
-        status = "未読"
-    ),
-    Book(
-        title = "Java入門",
-        author = "□□□",
-        status = "未読"
-    )
-)
-
 @Composable
 fun BookListScreen(
     modifier: Modifier = Modifier,
+    viewModel: BookViewModel,
     onAddBookClick: () -> Unit
 ) {
+    val books by viewModel.books.collectAsStateWithLifecycle()
+
     LazyColumn(
         modifier = modifier.fillMaxSize()
     ) {
@@ -145,7 +104,7 @@ fun BookListScreen(
             }
         }
 
-        items(sampleBooks) {book ->
+        items(books) { book ->
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -183,7 +142,10 @@ fun BookListScreen(
 @Composable
 fun BookListScreenPreview() {
     MyBookShelfTheme {
+        val bookViewModel: BookViewModel = viewModel()
+
         BookListScreen(
+            viewModel = bookViewModel,
             onAddBookClick = {}
         )
     }

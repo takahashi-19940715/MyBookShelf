@@ -30,7 +30,8 @@ import com.example.mybookshelf.viewmodel.BookViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookAddScreen(
-    viewModel: BookViewModel = viewModel()
+    viewModel: BookViewModel,
+    onBookAdded: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var expanded by remember { mutableStateOf(false) }
@@ -96,7 +97,8 @@ fun BookAddScreen(
 
         Button(
             onClick = {
-                // 後で登録処理を実装
+                viewModel.addBook()
+                onBookAdded()
             },
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -111,6 +113,11 @@ fun BookAddScreen(
 @Composable
 fun BookListScreenPreview() {
     MyBookShelfTheme {
-        BookAddScreen()
+        val bookViewModel: BookViewModel = viewModel()
+
+        BookAddScreen(
+            viewModel = bookViewModel,
+            onBookAdded = {}
+        )
     }
 }
