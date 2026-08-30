@@ -43,9 +43,9 @@ fun BookAddScreen(
         onAuthorChange = { viewModel.updateAuthor(it) },
         onStatusChange = { viewModel.updateStatus(it) },
         onAddBook = {
-            if (viewModel.addBook()) {
-                onBookAdded()
-            }
+            viewModel.addBook(
+                onComplete = { onBookAdded() }
+            )
         }
     )
 }

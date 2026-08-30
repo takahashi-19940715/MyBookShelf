@@ -47,13 +47,14 @@ fun BookEditScreen(
         onAuthorChange = { viewModel.updateAuthor(it) },
         onStatusChange = { viewModel.updateStatus(it) },
         onUpdateBook = {
-            if (viewModel.updateBook()) {
-                onBookUpdated()
-            }
+            viewModel.updateBook(
+                onComplete = { onBookUpdated() }
+            )
         },
         onDeleteBook = {
-            viewModel.deleteBook()
-            onBookDeleted()
+            viewModel.deleteBook(
+                onComplete = { onBookDeleted() }
+            )
         }
     )
 }

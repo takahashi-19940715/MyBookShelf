@@ -58,26 +58,28 @@ class BookViewModel(
         }
     }
 
-    fun addBook(): Boolean {
+    fun addBook(
+        onComplete: () -> Unit
+    ) {
         val currentState = _uiState.value
-        var hasError = false
 
-        if (currentState.title.isBlank()) {
+        val titleIsBlank = currentState.title.isBlank()
+        val authorIsBlank = currentState.author.isBlank()
+
+        if (titleIsBlank) {
             _uiState.update {
                 it.copy(titleError = "タイトルを入力してください")
             }
-            hasError = true
         }
 
-        if (currentState.author.isBlank()) {
+        if (authorIsBlank) {
             _uiState.update {
                 it.copy(authorError = "著者を入力してください")
             }
-            hasError = true
         }
 
-        if (hasError) {
-            return false
+        if (titleIsBlank || authorIsBlank) {
+            return
         }
 
         val bookEntity = BookEntity(
@@ -88,9 +90,8 @@ class BookViewModel(
 
         viewModelScope.launch {
             repository.insertBook(bookEntity)
+            onComplete()
         }
-
-        return true
     }
 
     fun startEditing(book: Book) {
@@ -103,29 +104,31 @@ class BookViewModel(
         )
     }
 
-    fun updateBook(): Boolean {
+    fun updateBook(
+        onComplete: () -> Unit
+    ) {
         val currentState = _uiState.value
-        var hasError = false
 
-        if (currentState.title.isBlank()) {
+        val titleIsBlank = currentState.title.isBlank()
+        val authorIsBlank = currentState.author.isBlank()
+
+        if (titleIsBlank) {
             _uiState.update {
                 it.copy(titleError = "タイトルを入力してください")
             }
-            hasError = true
         }
 
-        if (currentState.author.isBlank()) {
+        if (authorIsBlank) {
             _uiState.update {
                 it.copy(authorError = "著者を入力してください")
             }
-            hasError = true
         }
 
-        if (hasError) {
-            return false
-        }
+            if (titleIsBlank || authorIsBlank) {
+                return
+            }
 
-        val book = editingBook ?: return false
+        val book = editingBook ?: return
 
         val bookEntity = BookEntity(
             id = book.id,
@@ -136,13 +139,14 @@ class BookViewModel(
 
         viewModelScope.launch {
             repository.updateBook(bookEntity)
+            onComplete()
         }
-
-        return true
     }
 
-    fun deleteBook() {
-        val book = editingBook ?:return
+    fun deleteBook(
+        onComplete: () -> Unit
+    ) {
+        val book = editingBook ?: return
 
         val bookEntity = BookEntity(
             id =  book.id,
@@ -153,6 +157,7 @@ class BookViewModel(
 
         viewModelScope.launch {
             repository.deleteBook(bookEntity)
+            onComplete()
         }
     }
 }
