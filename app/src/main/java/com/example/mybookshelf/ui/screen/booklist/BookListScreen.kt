@@ -1,16 +1,21 @@
 package com.example.mybookshelf.ui.screen.booklist
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -44,61 +49,82 @@ fun BookListContent(
     onAddBookClick: () -> Unit,
     onBookClick: (Book) -> Unit
 ) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize()
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
     ) {
-        item {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                horizontalArrangement = Arrangement.Absolute.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "MyBookShelf",
-                    modifier = Modifier.padding(16.dp)
-                )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "MyBookShelf"
+            )
 
-                IconButton(
-                    onClick = onAddBookClick
-                ) {
-                    Text(
-                        text = "+"
-                    )
-                }
+            FloatingActionButton(
+                onClick = onAddBookClick
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "+"
+                )
             }
         }
 
-        items(books) { book ->
-            Card(
-                onClick = { onBookClick(book) },
+        if (books.isEmpty()) {
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(
-                        horizontal = 16.dp,
-                        vertical = 8.dp
-                    )
+                    .padding(32.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Column(
-                    modifier = Modifier.padding(
-                        horizontal = 16.dp,
-                        vertical = 8.dp
-                    )
-                ) {
-                    Text(
-                        text = book.title
-                    )
+                Text(
+                    text = "まだ本が登録されていません"
+                )
 
-                    Text(
-                        text = "著者：${book.author}",
-                        modifier = Modifier.padding(top = 4.dp)
-                    )
+                Text(
+                    text = "＋ボタンから本を追加してください"
+                )
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(books) { book ->
+                    Card(
+                        onClick = { onBookClick(book) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text(
+                                text = book.title,
+                                style = MaterialTheme.typography.titleMedium
+                            )
 
-                    Text(
-                        text = "ステータス：${book.status}",
-                        modifier = Modifier.padding(top = 4.dp)
-                    )
+                            Spacer(
+                                modifier = Modifier.height(16.dp)
+                            )
+
+                            Text(
+                                text = "著者：${book.author}",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+
+                            Text(
+                                text = "ステータス：${book.status}",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                    }
                 }
             }
         }
