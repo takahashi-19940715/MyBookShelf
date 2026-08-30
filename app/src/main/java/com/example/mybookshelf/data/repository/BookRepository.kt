@@ -12,6 +12,10 @@ class BookRepository(
     }
 
     suspend fun insertBook(book: BookEntity) {
-        return bookDao.insertBook(book)
+        bookDao.insertBook(book)
+    }
+
+    suspend fun updateBook(book: BookEntity) {
+        bookDao.updateBook(book)
     }
 }

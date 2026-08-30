@@ -3,6 +3,7 @@ package com.example.mybookshelf.data.local.dao
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Update
 import com.example.mybookshelf.data.local.entity.BookEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -13,4 +14,7 @@ interface BookDao {
 
     @Insert
     suspend fun insertBook(book: BookEntity)
+
+    @Update
+    suspend fun updateBook(book: BookEntity)
 }

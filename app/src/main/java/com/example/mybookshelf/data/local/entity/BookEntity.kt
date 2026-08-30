@@ -18,6 +18,7 @@ data class BookEntity(
 
 fun BookEntity.toBook(): Book {
     return Book(
+        id = id,
         title = title,
         author = author,
         status = status

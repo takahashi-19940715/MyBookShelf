@@ -1,5 +1,6 @@
 package com.example.mybookshelf.ui.screen.booklist
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,20 +26,23 @@ import com.example.mybookshelf.viewmodel.BookViewModel
 @Composable
 fun BookListScreen(
     viewModel: BookViewModel,
-    onAddBookClick: () -> Unit
+    onAddBookClick: () -> Unit,
+    onBookClick: (Book) -> Unit
 ) {
     val books by viewModel.books.collectAsStateWithLifecycle()
 
     BookListContent(
         books = books,
-        onAddBookClick = onAddBookClick
+        onAddBookClick = onAddBookClick,
+        onBookClick = onBookClick
     )
 }
 
 @Composable
 fun BookListContent(
     books: List<Book>,
-    onAddBookClick: () -> Unit
+    onAddBookClick: () -> Unit,
+    onBookClick: (Book) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize()
@@ -68,6 +72,7 @@ fun BookListContent(
 
         items(books) { book ->
             Card(
+                onClick = { onBookClick(book) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(
@@ -121,7 +126,8 @@ fun BookListScreenPreview() {
 
         BookListContent(
             books = sampleBooks,
-            onAddBookClick = {}
+            onAddBookClick = {},
+            onBookClick = {}
         )
     }
 }

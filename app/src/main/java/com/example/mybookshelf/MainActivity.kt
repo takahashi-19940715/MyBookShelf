@@ -16,6 +16,7 @@ import androidx.room.Room
 import com.example.mybookshelf.data.local.database.AppDatabase
 import com.example.mybookshelf.data.repository.BookRepository
 import com.example.mybookshelf.ui.screen.bookadd.BookAddScreen
+import com.example.mybookshelf.ui.screen.bookedit.BookEditScreen
 import com.example.mybookshelf.ui.screen.booklist.BookListScreen
 import com.example.mybookshelf.ui.theme.MyBookShelfTheme
 import com.example.mybookshelf.viewmodel.BookViewModel
@@ -53,6 +54,10 @@ class MainActivity : ComponentActivity() {
                                 viewModel = bookViewModel,
                                 onAddBookClick = {
                                     navController.navigate("book_add")
+                                },
+                                onBookClick = { book ->
+                                    bookViewModel.startEditing(book)
+                                    navController.navigate("book_edit")
                                 }
                             )
                         }
@@ -61,6 +66,15 @@ class MainActivity : ComponentActivity() {
                             BookAddScreen(
                                 viewModel = bookViewModel,
                                 onBookAdded = {
+                                    navController.popBackStack()
+                                }
+                            )
+                        }
+
+                        composable("book_edit") {
+                            BookEditScreen(
+                                viewModel = bookViewModel,
+                                onBookUpdated = {
                                     navController.popBackStack()
                                 }
                             )
