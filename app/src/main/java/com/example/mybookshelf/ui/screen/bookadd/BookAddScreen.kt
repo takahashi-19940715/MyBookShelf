@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -64,6 +66,7 @@ fun BookAddContent(
     onAddBook: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
+    val scrollState = rememberScrollState()
 
     Column(
         modifier = Modifier
@@ -73,79 +76,87 @@ fun BookAddContent(
     ) {
         Text(text = "本を追加")
 
-        OutlinedTextField(
-            value = title,
-            onValueChange = { onTitleChange(it) },
-            modifier = Modifier.fillMaxWidth(),
-            label = { Text("タイトル") },
-            isError = titleError != null,
-            supportingText = {
-                titleError?.let {
-                    Text(it)
-                }
-            }
-        )
-
-        OutlinedTextField(
-            value = author,
-            onValueChange = { onAuthorChange(it) },
-            modifier = Modifier.fillMaxWidth(),
-            label = { Text("著者") },
-            isError = authorError != null,
-            supportingText = {
-                authorError?.let {
-                    Text(it)
-                }
-            }
-        )
-
-        Text("ステータス")
-
-        ExposedDropdownMenuBox(
-            expanded = expanded,
-            onExpandedChange = { expanded = !expanded }
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .verticalScroll(scrollState),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            TextField(
-                value = status,
-                onValueChange = {},
-                readOnly = true,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryNotEditable),
-                trailingIcon = {
-                    ExposedDropdownMenuDefaults.TrailingIcon(
-                        expanded = expanded
-                    )
+            OutlinedTextField(
+                value = title,
+                onValueChange = { onTitleChange(it) },
+                modifier = Modifier.fillMaxWidth(),
+                label = { Text("タイトル") },
+                isError = titleError != null,
+                supportingText = {
+                    titleError?.let {
+                        Text(it)
+                    }
                 }
             )
 
-            ExposedDropdownMenu(
+            OutlinedTextField(
+                value = author,
+                onValueChange = { onAuthorChange(it) },
+                modifier = Modifier.fillMaxWidth(),
+                label = { Text("著者") },
+                isError = authorError != null,
+                supportingText = {
+                    authorError?.let {
+                        Text(it)
+                    }
+                }
+            )
+
+            Text("ステータス")
+
+            ExposedDropdownMenuBox(
                 expanded = expanded,
-                onDismissRequest = { expanded = false }
+                onExpandedChange = { expanded = !expanded }
             ) {
-                val statusList = listOf(
-                    "未読",
-                    "読書中",
-                    "読了"
+                TextField(
+                    value = status,
+                    onValueChange = {},
+                    readOnly = true,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryNotEditable),
+                    trailingIcon = {
+                        ExposedDropdownMenuDefaults.TrailingIcon(
+                            expanded = expanded
+                        )
+                    }
                 )
 
-                statusList.forEach { option ->
-                    DropdownMenuItem(
-                        text = { Text(option) },
-                        onClick = {
-                            onStatusChange(option)
-                            expanded = false
-                        }
+                ExposedDropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    val statusList = listOf(
+                        "未読",
+                        "読書中",
+                        "読了"
                     )
+
+                    statusList.forEach { option ->
+                        DropdownMenuItem(
+                            text = { Text(option) },
+                            onClick = {
+                                onStatusChange(option)
+                                expanded = false
+                            }
+                        )
+                    }
                 }
             }
-        }
 
-        Button(
-            onClick = onAddBook,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("登録")
+            Button(
+                onClick = onAddBook,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("登録")
+            }
         }
     }
 }
