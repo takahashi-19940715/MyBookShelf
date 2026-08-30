@@ -76,6 +76,9 @@ class MainActivity : ComponentActivity() {
                                 viewModel = bookViewModel,
                                 onBookUpdated = {
                                     navController.popBackStack()
+                                },
+                                onBookDeleted = {
+                                    navController.popBackStack()
                                 }
                             )
                         }

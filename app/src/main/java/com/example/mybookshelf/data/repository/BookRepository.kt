@@ -18,4 +18,8 @@ class BookRepository(
     suspend fun updateBook(book: BookEntity) {
         bookDao.updateBook(book)
     }
+
+    suspend fun deleteBook(book: BookEntity) {
+        bookDao.deleteBook(book)
+    }
 }

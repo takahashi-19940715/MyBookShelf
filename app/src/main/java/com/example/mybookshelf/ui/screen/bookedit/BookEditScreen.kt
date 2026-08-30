@@ -29,7 +29,8 @@ import com.example.mybookshelf.viewmodel.BookViewModel
 @Composable
 fun BookEditScreen(
     viewModel: BookViewModel,
-    onBookUpdated: () -> Unit
+    onBookUpdated: () -> Unit,
+    onBookDeleted: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -43,6 +44,10 @@ fun BookEditScreen(
         onUpdateBook = {
             viewModel.updateBook()
             onBookUpdated()
+        },
+        onDeleteBook = {
+            viewModel.deleteBook()
+            onBookDeleted()
         }
     )
 }
@@ -56,7 +61,8 @@ fun BookEditContent(
     onTitleChange: (String) -> Unit,
     onAuthorChange: (String) -> Unit,
     onStatusChange: (String) -> Unit,
-    onUpdateBook: () -> Unit
+    onUpdateBook: () -> Unit,
+    onDeleteBook: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -130,6 +136,13 @@ fun BookEditContent(
         ) {
             Text("保存")
         }
+
+        Button(
+            onClick = { onDeleteBook() },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("削除")
+        }
     }
 }
 
@@ -144,7 +157,8 @@ fun BookEditScreenPreview() {
             onTitleChange = {},
             onAuthorChange = {},
             onStatusChange = {},
-            onUpdateBook = {}
+            onUpdateBook = {},
+            onDeleteBook = {}
         )
     }
 }

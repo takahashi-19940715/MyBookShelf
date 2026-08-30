@@ -30,8 +30,8 @@ class BookViewModel(
                 initialValue = emptyList()
             )
 
-    // 編集中の本のID
-    private var editingBookId: Int? = null
+    // 編集中の本情報
+    private var editingBook: Book? = null
 
     fun updateTitle(title: String) {
         _uiState.value = _uiState.value.copy(title = title)
@@ -46,19 +46,19 @@ class BookViewModel(
     }
 
     fun addBook() {
-        val book = BookEntity(
+        val bookEntity = BookEntity(
             title = _uiState.value.title,
             author = _uiState.value.author,
             status = _uiState.value.status
         )
 
         viewModelScope.launch {
-            repository.insertBook(book)
+            repository.insertBook(bookEntity)
         }
     }
 
     fun startEditing(book: Book) {
-        editingBookId = book.id
+        editingBook = book
 
         _uiState.value = BookUiState(
             title = book.title,
@@ -68,17 +68,32 @@ class BookViewModel(
     }
 
     fun updateBook() {
-        val id = editingBookId ?: return
+        val book = editingBook ?: return
 
-        val book = BookEntity(
-            id = id,
+        val bookEntity = BookEntity(
+            id = book.id,
             title = _uiState.value.title,
             author = _uiState.value.author,
             status = _uiState.value.status
         )
 
         viewModelScope.launch {
-            repository.updateBook(book)
+            repository.updateBook(bookEntity)
+        }
+    }
+
+    fun deleteBook() {
+        val book = editingBook ?:return
+
+        val bookEntity = BookEntity(
+            id =  book.id,
+            title = book.title,
+            author = book.author,
+            status = book.status
+        )
+
+        viewModelScope.launch {
+            repository.deleteBook(bookEntity)
         }
     }
 }
