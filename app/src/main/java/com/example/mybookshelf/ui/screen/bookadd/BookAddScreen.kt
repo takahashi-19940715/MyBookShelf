@@ -37,12 +37,15 @@ fun BookAddScreen(
         title = uiState.title,
         author = uiState.author,
         status = uiState.status,
+        titleError = uiState.titleError,
+        authorError = uiState.authorError,
         onTitleChange = { viewModel.updateTitle(it) },
         onAuthorChange = { viewModel.updateAuthor(it) },
         onStatusChange = { viewModel.updateStatus(it) },
         onAddBook = {
-            viewModel.addBook()
-            onBookAdded()
+            if (viewModel.addBook()) {
+                onBookAdded()
+            }
         }
     )
 }
@@ -53,6 +56,8 @@ fun BookAddContent(
     title: String,
     author: String,
     status: String,
+    titleError: String?,
+    authorError: String?,
     onTitleChange: (String) -> Unit,
     onAuthorChange: (String) -> Unit,
     onStatusChange: (String) -> Unit,
@@ -72,14 +77,26 @@ fun BookAddContent(
             value = title,
             onValueChange = { onTitleChange(it) },
             modifier = Modifier.fillMaxWidth(),
-            label = { Text("タイトル") }
+            label = { Text("タイトル") },
+            isError = titleError != null,
+            supportingText = {
+                titleError?.let {
+                    Text(it)
+                }
+            }
         )
 
         OutlinedTextField(
             value = author,
             onValueChange = { onAuthorChange(it) },
             modifier = Modifier.fillMaxWidth(),
-            label = { Text("著者") }
+            label = { Text("著者") },
+            isError = authorError != null,
+            supportingText = {
+                authorError?.let {
+                    Text(it)
+                }
+            }
         )
 
         Text("ステータス")
@@ -141,6 +158,8 @@ fun BookAddScreenPreview() {
             title = "Android開発入門",
             author = "サンプル著者",
             status = "読書中",
+            titleError = null,
+            authorError = null,
             onTitleChange = {},
             onAuthorChange = {},
             onStatusChange = {},

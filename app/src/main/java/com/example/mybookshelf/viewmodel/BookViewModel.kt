@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class BookViewModel(
@@ -34,27 +35,62 @@ class BookViewModel(
     private var editingBook: Book? = null
 
     fun updateTitle(title: String) {
-        _uiState.value = _uiState.value.copy(title = title)
+        _uiState.update {
+            it.copy(
+                title = title,
+                titleError = null
+            )
+        }
     }
 
     fun updateAuthor(author: String) {
-        _uiState.value = _uiState.value.copy(author = author)
+        _uiState.update {
+            it.copy(
+                author = author,
+                authorError = null
+            )
+        }
     }
 
     fun updateStatus(status: String) {
-        _uiState.value = _uiState.value.copy(status = status)
+        _uiState.update {
+            it.copy(status = status)
+        }
     }
 
-    fun addBook() {
+    fun addBook(): Boolean {
+        val currentState = _uiState.value
+        var hasError = false
+
+        if (currentState.title.isBlank()) {
+            _uiState.update {
+                it.copy(titleError = "タイトルを入力してください")
+            }
+            hasError = true
+        }
+
+        if (currentState.author.isBlank()) {
+            _uiState.update {
+                it.copy(authorError = "著者を入力してください")
+            }
+            hasError = true
+        }
+
+        if (hasError) {
+            return false
+        }
+
         val bookEntity = BookEntity(
-            title = _uiState.value.title,
-            author = _uiState.value.author,
-            status = _uiState.value.status
+            title = currentState.title,
+            author = currentState.author,
+            status = currentState.status
         )
 
         viewModelScope.launch {
             repository.insertBook(bookEntity)
         }
+
+        return true
     }
 
     fun startEditing(book: Book) {
@@ -67,19 +103,42 @@ class BookViewModel(
         )
     }
 
-    fun updateBook() {
-        val book = editingBook ?: return
+    fun updateBook(): Boolean {
+        val currentState = _uiState.value
+        var hasError = false
+
+        if (currentState.title.isBlank()) {
+            _uiState.update {
+                it.copy(titleError = "タイトルを入力してください")
+            }
+            hasError = true
+        }
+
+        if (currentState.author.isBlank()) {
+            _uiState.update {
+                it.copy(authorError = "著者を入力してください")
+            }
+            hasError = true
+        }
+
+        if (hasError) {
+            return false
+        }
+
+        val book = editingBook ?: return false
 
         val bookEntity = BookEntity(
             id = book.id,
-            title = _uiState.value.title,
-            author = _uiState.value.author,
-            status = _uiState.value.status
+            title = currentState.title,
+            author = currentState.author,
+            status = currentState.status
         )
 
         viewModelScope.launch {
             repository.updateBook(bookEntity)
         }
+
+        return true
     }
 
     fun deleteBook() {
