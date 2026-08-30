@@ -1,6 +1,7 @@
 package com.example.mybookshelf.ui.screen.bookedit
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
@@ -15,6 +18,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -24,6 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -35,7 +41,8 @@ import com.example.mybookshelf.viewmodel.BookViewModel
 fun BookEditScreen(
     viewModel: BookViewModel,
     onBookUpdated: () -> Unit,
-    onBookDeleted: () -> Unit
+    onBookDeleted: () -> Unit,
+    onBackClick: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -57,7 +64,8 @@ fun BookEditScreen(
             viewModel.deleteBook(
                 onComplete = { onBookDeleted() }
             )
-        }
+        },
+        onBackClick = { onBackClick() }
     )
 }
 
@@ -73,7 +81,8 @@ fun BookEditContent(
     onAuthorChange: (String) -> Unit,
     onStatusChange: (String) -> Unit,
     onUpdateBook: () -> Unit,
-    onDeleteBook: () -> Unit
+    onDeleteBook: () -> Unit,
+    onBackClick: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
@@ -85,7 +94,26 @@ fun BookEditContent(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Text(text = "本を編集")
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp)
+        ) {
+            FloatingActionButton(
+                onClick = { onBackClick() },
+                modifier = Modifier.align(Alignment.CenterStart)
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "戻る"
+                )
+            }
+
+            Text(
+                text = "本を編集",
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
 
         Column(
             modifier = Modifier
@@ -230,7 +258,8 @@ fun BookEditScreenPreview() {
             onAuthorChange = {},
             onStatusChange = {},
             onUpdateBook = {},
-            onDeleteBook = {}
+            onDeleteBook = {},
+            onBackClick = {}
         )
     }
 }

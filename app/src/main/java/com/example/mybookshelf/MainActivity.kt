@@ -67,6 +67,9 @@ class MainActivity : ComponentActivity() {
                                 viewModel = bookViewModel,
                                 onBookAdded = {
                                     navController.popBackStack()
+                                },
+                                onBackClick = {
+                                    navController.popBackStack()
                                 }
                             )
                         }
@@ -78,6 +81,9 @@ class MainActivity : ComponentActivity() {
                                     navController.popBackStack()
                                 },
                                 onBookDeleted = {
+                                    navController.popBackStack()
+                                },
+                                onBackClick = {
                                     navController.popBackStack()
                                 }
                             )

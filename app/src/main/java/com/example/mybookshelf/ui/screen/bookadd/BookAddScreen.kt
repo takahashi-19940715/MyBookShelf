@@ -1,26 +1,33 @@
 package com.example.mybookshelf.ui.screen.bookadd
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -31,8 +38,13 @@ import com.example.mybookshelf.viewmodel.BookViewModel
 @Composable
 fun BookAddScreen(
     viewModel: BookViewModel,
-    onBookAdded: () -> Unit
+    onBookAdded: () -> Unit,
+    onBackClick: () -> Unit
 ) {
+    LaunchedEffect(Unit) {
+        viewModel.resetUiState()
+    }
+
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     BookAddContent(
@@ -48,7 +60,8 @@ fun BookAddScreen(
             viewModel.addBook(
                 onComplete = { onBookAdded() }
             )
-        }
+        },
+        onBackClick = { onBackClick() }
     )
 }
 
@@ -63,7 +76,8 @@ fun BookAddContent(
     onTitleChange: (String) -> Unit,
     onAuthorChange: (String) -> Unit,
     onStatusChange: (String) -> Unit,
-    onAddBook: () -> Unit
+    onAddBook: () -> Unit,
+    onBackClick: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
@@ -74,7 +88,26 @@ fun BookAddContent(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Text(text = "本を追加")
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp)
+        ) {
+            FloatingActionButton(
+                onClick = { onBackClick() },
+                modifier = Modifier.align(Alignment.CenterStart)
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "戻る"
+                )
+            }
+
+            Text(
+                text = "本を追加",
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
 
         Column(
             modifier = Modifier
@@ -174,7 +207,8 @@ fun BookAddScreenPreview() {
             onTitleChange = {},
             onAuthorChange = {},
             onStatusChange = {},
-            onAddBook = {}
+            onAddBook = {},
+            onBackClick = {}
         )
     }
 }

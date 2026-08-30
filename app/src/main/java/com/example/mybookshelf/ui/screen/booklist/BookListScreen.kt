@@ -1,8 +1,8 @@
 package com.example.mybookshelf.ui.screen.booklist
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -52,27 +52,28 @@ fun BookListContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Row(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+                .padding(vertical = 8.dp)
         ) {
-            Text(
-                text = "MyBookShelf"
-            )
-
             FloatingActionButton(
-                onClick = onAddBookClick
+                onClick = onAddBookClick,
+                modifier = Modifier.align(Alignment.CenterEnd)
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = "+"
+                    contentDescription = "追加"
                 )
             }
+
+            Text(
+                text = "MyBookShelf",
+                modifier = Modifier.align(Alignment.Center)
+            )
         }
 
         if (books.isEmpty()) {

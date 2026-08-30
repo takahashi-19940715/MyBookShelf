@@ -34,6 +34,10 @@ class BookViewModel(
     // 編集中の本情報
     private var editingBook: Book? = null
 
+    fun resetUiState() {
+        _uiState.value = BookUiState()
+    }
+
     fun updateTitle(title: String) {
         _uiState.update {
             it.copy(
