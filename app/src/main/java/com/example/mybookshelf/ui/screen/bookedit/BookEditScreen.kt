@@ -2,9 +2,11 @@ package com.example.mybookshelf.ui.screen.bookedit
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -13,6 +15,7 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -65,6 +68,7 @@ fun BookEditContent(
     onDeleteBook: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -130,19 +134,57 @@ fun BookEditContent(
             }
         }
 
-        Button(
-            onClick = { onUpdateBook() },
-            modifier = Modifier.fillMaxWidth()
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text("保存")
-        }
+            Button(
+                onClick = onUpdateBook,
+                modifier = Modifier.weight(1f)
+            ) {
+                Text("保存")
+            }
 
-        Button(
-            onClick = { onDeleteBook() },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("削除")
+            Button(
+                onClick = { showDeleteDialog = true },
+                modifier = Modifier.weight(1f)
+            ) {
+                Text("削除")
+            }
         }
+    }
+
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                showDeleteDialog = false
+            },
+            title = {
+                Text("本を削除しますか？")
+            },
+            text = {
+                Text("この本を削除すると元に戻せません。")
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDeleteDialog = false
+                        onDeleteBook()
+                    }
+                ) {
+                    Text("削除")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showDeleteDialog = false
+                    }
+                ) {
+                    Text("キャンセル")
+                }
+            }
+        )
     }
 }
 
