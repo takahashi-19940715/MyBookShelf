@@ -101,7 +101,7 @@ ViewModelから直接DAOを操作せず、Repositoryを経由してデータア�
 
 本のタイトル・著者・ステータスをCard形式で表示しています。
 
-![本一覧画面](screenshots/book_list.png)
+<img src="screenshots/book_list.png" width="350" alt="本一覧画面">
 
 ### 本追加画面
 
@@ -112,7 +112,7 @@ ViewModelから直接DAOを操作せず、Repositoryを経由してデータア�
 
 登録完了後は本一覧画面へ戻ります。
 
-![本追加画面](screenshots/book_add.png)
+<img src="screenshots/book_add.png" width="350" alt="本追加画面">
 
 ### 本編集画面
 
@@ -123,7 +123,7 @@ ViewModelから直接DAOを操作せず、Repositoryを経由してデータア�
 削除時には確認ダイアログを表示し、
 削除完了後は本一覧画面へ戻ります。
 
-![本編集画面](screenshots/book_edit.png)
+<img src="screenshots/book_edit.png" width="350" alt="本編集画面">
 
 
 ## 主な実装内容
